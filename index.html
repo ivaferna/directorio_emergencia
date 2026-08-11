@@ -12,276 +12,255 @@
       --verde-oscuro: #113328;
       --crema-fondo: #fcfbf7;
       --crema-tarjeta: #ffffff;
-      --crema-suave: #f4f1ea;
+      --crema-borde: #e2ded4;
       --dorado: #d4af37;
       --dorado-brillo: #f3e5ab;
-      --texto-oscuro: #2c3531;
-      --texto-mutado: #66706b;
-      --rojo-alerta: #c0392b;
+      --texto-principal: #1a2421;
+      --texto-secundario: #52605b;
+      --rojo-alerta: #991b1b;
+      --rojo-fondo: #fee2e2;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-    body { background-color: var(--crema-fondo); color: var(--texto-oscuro); padding: 15px; }
-
-    /* Encabezado e Insignia */
-    header {
+    * { box-sizing: border-box; font-family: system-ui, -apple-system, sans-serif; }
+    body { background-color: var(--crema-fondo); color: var(--texto-principal); margin: 0; padding: 16px; }
+    
+    .header { 
+      text-align: center; 
+      margin-bottom: 16px; 
       background: linear-gradient(135deg, var(--verde-principal), var(--verde-oscuro));
       color: #ffffff;
-      padding: 20px 15px;
+      padding: 16px;
       border-radius: 12px;
-      text-align: center;
-      margin-bottom: 20px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-      border-bottom: 4px solid var(--dorado);
+      border-bottom: 3px solid var(--dorado);
+      box-shadow: 0 4px 6px rgba(0,0,0,0.05);
     }
 
-    .insignia-container {
-      width: 90px;
-      height: 90px;
-      margin: 0 auto 12px auto;
+    .insignia-box {
+      width: 75px;
+      height: 75px;
+      margin: 0 auto 10px auto;
       border-radius: 50%;
       background-color: var(--crema-fondo);
-      border: 3px solid var(--dorado);
+      border: 2px solid var(--dorado);
       display: flex;
       align-items: center;
       justify-content: center;
       overflow: hidden;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
     }
 
-    .insignia-container img {
+    .insignia-box img {
       width: 100%;
       height: 100%;
       object-fit: contain;
     }
 
-    /* Si no hay imagen aún, se muestra este texto */
-    .insignia-placeholder {
-      font-size: 11px;
+    .insignia-text {
+      font-size: 0.65rem;
       color: var(--verde-principal);
       font-weight: bold;
       text-align: center;
-      padding: 5px;
+      padding: 4px;
     }
 
-    h1 { font-size: 24px; font-weight: 700; letter-spacing: 0.5px; color: #ffffff; }
-    #status { font-size: 13px; margin-top: 6px; color: var(--dorado-brillo); font-weight: 600; }
-
-    /* Filtros y Búsqueda */
-    .filtros {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin-bottom: 12px;
+    .header h1 { font-size: 1.3rem; margin: 0; color: #ffffff; font-weight: bold; }
+    .status-bar { font-size: 0.8rem; color: var(--dorado-brillo); margin-top: 4px; font-weight: 500; }
+    
+    .filter-box { 
+      background: #ffffff; 
+      padding: 12px; 
+      border-radius: 8px; 
+      margin-bottom: 16px; 
+      display: flex; 
+      flex-direction: column; 
+      gap: 8px; 
+      border: 1px solid var(--crema-borde);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.02);
     }
-
-    select, input {
-      width: 100%;
-      padding: 12px;
-      border: 2px solid var(--crema-suave);
-      border-radius: 8px;
-      background-color: #ffffff;
-      font-size: 14px;
-      color: var(--texto-oscuro);
+    .row { display: flex; gap: 8px; }
+    select, input { 
+      width: 100%; 
+      padding: 10px; 
+      border-radius: 6px; 
+      border: 1px solid var(--crema-borde); 
+      background: var(--crema-fondo); 
+      color: var(--texto-principal); 
+      font-size: 0.9rem; 
       outline: none;
-      transition: border-color 0.3s;
     }
 
     select:focus, input:focus {
       border-color: var(--verde-principal);
     }
-
-    .busqueda-box { margin-bottom: 20px; }
-
-    /* Tarjetas de Alumnos */
-    .grid-alumnos {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 15px;
-    }
-
-    .card {
-      background-color: var(--crema-tarjeta);
-      border-radius: 10px;
-      padding: 15px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    
+    .card { 
+      background: var(--crema-tarjeta); 
+      border: 1px solid var(--crema-borde); 
       border-left: 5px solid var(--verde-principal);
-      border-top: 1px solid var(--crema-suave);
-      border-right: 1px solid var(--crema-suave);
-      border-bottom: 1px solid var(--crema-suave);
+      border-radius: 8px; 
+      padding: 12px; 
+      margin-bottom: 12px; 
+      box-shadow: 0 2px 5px rgba(0,0,0,0.03);
     }
-
-    .card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 8px;
-      border-bottom: 1px solid var(--crema-suave);
-      padding-bottom: 6px;
-    }
-
-    .card-title { font-size: 16px; font-weight: bold; color: var(--verde-principal); }
-    .badge-grado {
-      background-color: var(--dorado-brillo);
-      color: var(--verde-oscuro);
-      font-size: 11px;
+    .card-title { font-weight: bold; font-size: 1rem; color: var(--verde-principal); display: flex; justify-content: space-between; align-items: center; }
+    .badge-grade { 
+      background: var(--dorado-brillo); 
+      color: var(--verde-oscuro); 
+      font-size: 0.75rem; 
+      padding: 2px 8px; 
+      border-radius: 12px; 
+      border: 1px solid var(--dorado);
       font-weight: bold;
-      padding: 3px 8px;
-      border-radius: 12px;
+    }
+    
+    .alert-med { 
+      background: var(--rojo-fondo); 
+      color: var(--rojo-alerta); 
+      border: 1px solid #fca5a5; 
+      padding: 6px 10px; 
+      border-radius: 6px; 
+      font-size: 0.85rem; 
+      margin: 8px 0; 
+      font-weight: 600;
+    }
+    
+    .contacts { margin-top: 8px; }
+    .btn-call { 
+      display: inline-block; 
+      background: var(--verde-principal); 
+      color: #ffffff; 
+      text-decoration: none; 
+      padding: 10px 12px; 
+      border-radius: 6px; 
+      font-weight: bold; 
+      font-size: 0.85rem; 
+      margin-top: 6px; 
+      width: 100%; 
+      text-align: center; 
       border: 1px solid var(--dorado);
     }
-
-    .card-info { font-size: 13px; color: var(--texto-oscuro); margin-bottom: 4px; }
-    .card-info span { color: var(--texto-mutado); font-weight: 600; }
-
-    .alerta-medica {
-      background-color: #fdf2f2;
-      color: var(--rojo-alerta);
-      padding: 6px 10px;
-      border-radius: 6px;
-      font-size: 12px;
-      font-weight: bold;
-      margin-top: 8px;
-      border-left: 3px solid var(--rojo-alerta);
-    }
-
-    .btn-llamar {
-      display: inline-block;
-      width: 100%;
-      text-align: center;
-      background-color: var(--verde-principal);
-      color: #ffffff;
-      text-decoration: none;
-      padding: 10px;
-      border-radius: 6px;
-      font-weight: bold;
-      font-size: 13px;
-      margin-top: 10px;
-      border: 1px solid var(--dorado);
-    }
-
-    .btn-llamar:active { background-color: var(--verde-oscuro); }
+    .btn-call:active { background: var(--verde-oscuro); }
   </style>
 </head>
 <body>
 
-  <header>
-    <!-- ESPACIO PARA LA INSIGNIA -->
-    <div class="insignia-container">
-      <!-- Reemplaza "insignia.png" por la ruta de tu imagen cuando la subas a GitHub -->
+  <div class="header">
+    <!-- ESPACIO PARA LA INSIGNIA DEL COLEGIO -->
+    <div class="insignia-box">
       <img src="insignia.png" alt="Insignia" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-      <div class="insignia-placeholder" style="display:none;">LOGOTIPO / INSIGNIA</div>
+      <div class="insignia-text" style="display:none;">INSIGNIA COLEGIO</div>
     </div>
-    
+
     <h1>GakuEmergencias</h1>
-    <div id="status">Cargando datos...</div>
-  </header>
-
-  <div class="filtros">
-    <select id="selectGrado" onchange="filtrarAlumnos()">
-      <option value="">Todos los Grados</option>
-      <option value="1°">1° Grado</option>
-      <option value="2°">2° Grado</option>
-      <option value="3°">3° Grado</option>
-      <option value="4°">4° Grado</option>
-      <option value="5°">5° Grado</option>
-      <option value="6°">6° Grado</option>
-    </select>
-
-    <select id="selectSeccion" onchange="filtrarAlumnos()">
-      <option value="">Todas las Secciones</option>
-      <option value="A">Sección A</option>
-      <option value="B">Sección B</option>
-      <option value="C">Sección C</option>
-    </select>
+    <div class="status-bar" id="syncStatus">Cargando datos...</div>
   </div>
 
-  <div class="busqueda-box">
-    <input type="text" id="inputBuscar" placeholder="Buscar por Apellido o Nombre..." onkeyup="filtrarAlumnos()">
+  <!-- Filtros combinados: Grado/Sección + Búsqueda por Texto -->
+  <div class="filter-box">
+    <div class="row">
+      <select id="selectGrado" onchange="filtrar()">
+        <option value="">-- Todos los Grados --</option>
+        <option value="1°">1° Grado</option>
+        <option value="2°">2° Grado</option>
+        <option value="3°">3° Grado</option>
+        <option value="4°">4° Grado</option>
+        <option value="5°">5° Grado</option>
+        <option value="6°">6° Grado</option>
+      </select>
+      <select id="selectSeccion" onchange="filtrar()">
+        <option value="">-- Sección --</option>
+        <option value="A">Sección A</option>
+        <option value="B">Sección B</option>
+        <option value="C">Sección C</option>
+      </select>
+    </div>
+    <input type="text" id="inputBuscar" placeholder="🔍 Buscar por Nombre o Apellido..." onkeyup="filtrar()">
   </div>
 
-  <div id="contenedorAlumnos" class="grid-alumnos"></div>
+  <!-- Lista dinámica de estudiantes -->
+  <div id="listaEstudiantes"></div>
 
   <script>
-    // COLOCA AQUÍ TU URL REAL DE GOOGLE APPS SCRIPT
+    // URL DE TU APPS SCRIPT
     const API_URL = "https://script.google.com/macros/s/AKfycbw2y5DnhCAqJxO8ITkTOlpZiRHdEuaKrMDHcJx4jS37bfUP0zOhp6UO5YR-QX0hL1QP/exec"; 
     
-    let listaAlumnos = [];
+    let estudiantes = [];
 
+    // Cargar datos (Estrategia Offline-First)
     async function cargarDatos() {
-      const statusDiv = document.getElementById("status");
+      // 1. Cargar copia local guardada previo si existe
+      const localData = localStorage.getItem("directorio_alumnos");
+      if (localData) {
+        estudiantes = JSON.parse(localData);
+        document.getElementById("syncStatus").innerText = "⚡ Datos locales listos (Modo Offline)";
+        mostrarEstudiantes(estudiantes);
+      }
+
+      // 2. Intentar actualizar desde la nube si hay internet
       try {
-        const respuesta = await fetch(API_URL);
-        listaAlumnos = await respuesta.json();
-        localStorage.setItem("gaku_alumnos_db", JSON.stringify(listaAlumnos));
-        statusDiv.innerHTML = "✅ Sincronizado con Google Sheets";
-        mostrarAlumnos(listaAlumnos);
-      } catch (error) {
-        const datosGuardados = localStorage.getItem("gaku_alumnos_db");
-        if (datosGuardados) {
-          listaAlumnos = JSON.parse(datosGuardados);
-          statusDiv.innerHTML = "⚡ Datos locales listos (Modo Offline)";
-          mostrarAlumnos(listaAlumnos);
-        } else {
-          statusDiv.innerHTML = "⚠️ Sin conexión y sin datos locales";
+        const res = await fetch(API_URL);
+        const data = await res.json();
+        estudiantes = data;
+        localStorage.setItem("directorio_alumnos", JSON.stringify(data));
+        document.getElementById("syncStatus").innerText = "✅ Sincronizado con Google Sheets";
+        mostrarEstudiantes(estudiantes);
+      } catch (err) {
+        if (!localData) {
+          document.getElementById("syncStatus").innerText = "⚠️ Sin conexión y sin datos locales";
         }
       }
     }
 
-    function mostrarAlumnos(alumnos) {
-      const contenedor = document.getElementById("contenedorAlumnos");
+    function mostrarEstudiantes(lista) {
+      const contenedor = document.getElementById("listaEstudiantes");
       contenedor.innerHTML = "";
 
-      if (alumnos.length === 0) {
-        contenedor.innerHTML = "<p style='text-align:center; grid-column: 1/-1; color: var(--texto-mutado);'>No se encontraron alumnos.</p>";
+      if (lista.length === 0) {
+        contenedor.innerHTML = "<p style='text-align:center; color: var(--texto-secundario);'>No se encontraron alumnos.</p>";
         return;
       }
 
-      alumnos.forEach(al => {
-        const tarjeta = document.createElement("div");
-        tarjeta.className = "card";
-        
-        let alertaHtml = al.Alerta_Medica ? `<div class="alerta-medica">⚠️ ${al.Alerta_Medica}</div>` : "";
-        let telefonoHtml = al.Telefono_Apoderado ? `<a href="tel:${al.Telefono_Apoderado}" class="btn-llamar">📞 Llamar Apoderado</a>` : "";
-
-        tarjeta.innerHTML = `
-          <div class="card-header">
-            <div class="card-title">${al.Apellidos || ''}, ${al.Nombres || ''}</div>
-            <span class="badge-grado">${al.Grado || ''} "${al.Seccion || ''}"</span>
+      lista.forEach(est => {
+        const div = document.createElement("div");
+        div.className = "card";
+        div.innerHTML = `
+          <div class="card-title">
+            <span>${est.Apellidos}, ${est.Nombres}</span>
+            <span class="badge-grade">${est.Grado} ${est.Seccion}</span>
           </div>
-          <div class="card-info"><span>Apoderado:</span> ${al.Apoderado || 'No registrado'}</div>
-          <div class="card-info"><span>Teléfono:</span> ${al.Telefono_Apoderado || 'Sin número'}</div>
-          ${alertaHtml}
-          ${telefonoHtml}
+          ${est.Alerta_Medica ? `<div class="alert-med">⚠️ ALERTA: ${est.Alerta_Medica}</div>` : ''}
+          <div class="contacts">
+            <small style="color: var(--texto-secundario);"><b>Apoderado:</b> ${est.Contacto_1_Nombre} (${est.Contacto_1_Parentesco})</small>
+            <a href="tel:${est.Contacto_1_Telefono}" class="btn-call">📞 Llamar: ${est.Contacto_1_Telefono}</a>
+          </div>
         `;
-        contenedor.appendChild(tarjeta);
+        contenedor.appendChild(div);
       });
     }
 
-    function filtrarAlumnos() {
+    function filtrar() {
       const grado = document.getElementById("selectGrado").value.toLowerCase();
       const seccion = document.getElementById("selectSeccion").value.toLowerCase();
-      const busqueda = document.getElementById("inputBuscar").value.toLowerCase();
+      const texto = document.getElementById("inputBuscar").value.toLowerCase();
 
-      const filtrados = listaAlumnos.filter(al => {
-        const coincideGrado = !grado || (al.Grado && al.Grado.toString().toLowerCase().includes(grado));
-        const coincideSeccion = !seccion || (al.Seccion && al.Seccion.toString().toLowerCase().includes(seccion));
-        const coincideNombre = !busqueda || 
-          (al.Nombres && al.Nombres.toLowerCase().includes(busqueda)) || 
-          (al.Apellidos && al.Apellidos.toLowerCase().includes(busqueda));
+      const filtrados = estudiantes.filter(e => {
+        const coincideGrado = !grado || String(e.Grado).toLowerCase().includes(grado);
+        const coincideSeccion = !seccion || String(e.Seccion).toLowerCase().includes(seccion);
+        const coincideTexto = !texto || 
+          String(e.Apellidos).toLowerCase().includes(texto) || 
+          String(e.Nombres).toLowerCase().includes(texto);
 
-        return coincideGrado && coincideSeccion && coincideNombre;
+        return coincideGrado && coincideSeccion && coincideTexto;
       });
 
-      mostrarAlumnos(filtrados);
+      mostrarEstudiantes(filtrados);
     }
 
-    // Registro del Service Worker para soporte PWA Offline
+    // Registrar Service Worker para soporte offline PWA
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('sw.js');
     }
 
-    cargarDatos();
+    window.onload = cargarDatos;
   </script>
 </body>
 </html>
