@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Directorio de Emergencias</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" #1e293b>
+  <style>
+    * { box-sizing: border-box; font-family: system-ui, -apple-system, sans-serif; }
+    body { background-color: #0f172a; color: #f8fafc; margin: 0; padding: 16px; }
+    
+    .header { text-align: center; margin-bottom: 16px; }
+    .header h1 { font-size: 1.2rem; margin: 0; color: #38bdf8; }
+    .status-bar { font-size: 0.8rem; color: #94a3b8; margin-top: 4px; }
+    
+    .filter-box { background: #1e293b; padding: 12px; border-radius: 8px; margin-bottom: 16px; display: flex; flex-direction: column; gap: 8px; }
+    .row { display: flex; gap: 8px; }
+    select, input { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #334155; background: #0f172a; color: #fff; font-size: 0.9rem; }
+    
+    .card { background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 12px; margin-bottom: 12px; }
+    .card-title { font-weight: bold; font-size: 1rem; color: #fff; display: flex; justify-content: space-between; }
+    .badge-grade { background: #3b82f6; color: #fff; font-size: 0.75rem; padding: 2px 6px; border-radius: 4px; }
+    
+    .alert-med { background: #451a1a; color: #fca5a5; border: 1px solid #7f1d1d; padding: 6px; border-radius: 4px; font-size: 0.85rem; margin: 8px 0; }
+    
+    .contacts { margin-top: 8px; }
+    .btn-call { display: inline-block; background: #2563eb; color: #fff; text-decoration: none; padding: 8px 12px; border-radius: 6px; font-weight: bold; font-size: 0.85rem; margin-top: 4px; width: 100%; text-align: center; }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <h1>🚨 Directorio de Emergencia</h1>
+    <div class="status-bar" id="syncStatus">Cargando datos...</div>
+  </div>
+
+  <!-- Filtros combinados: Grado/Sección + Búsqueda por Texto -->
+  <div class="filter-box">
+    <div class="row">
+      <select id="selectGrado" onchange="filtrar()">
+        <option value="">-- Todos los Grados --</option>
+        <option value="1°">1° Grado</option>
+        <option value="2°">2° Grado</option>
+        <option value="3°">3° Grado</option>
+        <option value="4°">4° Grado</option>
+        <option value="5°">5° Grado</option>
+        <option value="6°">6° Grado</option>
+      </select>
+      <select id="selectSeccion" onchange="filtrar()">
+        <option value="">-- Sección --</option>
+        <option value="A">Sección A</option>
+        <option value="B">Sección B</option>
+        <option value="C">Sección C</option>
+      </select>
+    </div>
+    <input type="text" id="inputBuscar" placeholder="🔍 Buscar por Nombre o Apellido..." onkeyup="filtrar()">
+  </div>
+
+  <!-- Lista dinámica de estudiantes -->
+  <div id="listaEstudiantes"></div>
+
+  <script>
+    // PEGA AQUÍ TU URL DE APPS SCRIPT
+    const API_URL = "https://script.google.com/a/macros/iepgakusei.edu.pe/s/AKfycbwyC3vaw0ibibVNsMKtwRHsRK26vVF_pjaIZ_rQb7w_sBbFQ9RlvYHkWL5MDJJ89WM7nQ/exec"; 
+    
+    let estudiantes = [];
+
+    // Cargar datos (Estrategia Offline-First)
+    async function cargarDatos() {
+      // 1. Cargar copia local guardada previo si existe
+      const localData = localStorage.getItem("directorio_alumnos");
+      if (localData) {
+        estudiantes = JSON.parse(localData);
+        document.getElementById("syncStatus").innerText = "⚡ Datos locales listos (Modo Offline)";
+        mostrarEstudiantes(estudiantes);
+      }
+
+      // 2. Intentar actualizar desde la nube si hay internet
+      try {
+        const res = await fetch(API_URL);
+        const data = await res.json();
+        estudiantes = data;
+        localStorage.setItem("directorio_alumnos", JSON.stringify(data));
+        document.getElementById("syncStatus").innerText = "✅ Sincronizado con Google Sheets";
+        mostrarEstudiantes(estudiantes);
+      } catch (err) {
+        if (!localData) {
+          document.getElementById("syncStatus").innerText = "⚠️ Sin conexión y sin datos locales";
+        }
+      }
+    }
+
+    function mostrarEstudiantes(lista) {
+      const contenedor = document.getElementById("listaEstudiantes");
+      contenedor.innerHTML = "";
+
+      if (lista.length === 0) {
+        contenedor.innerHTML = "<p style='text-align:center; color:#94a3b8;'>No se encontraron alumnos.</p>";
+        return;
+      }
+
+      lista.forEach(est => {
+        const div = document.createElement("div");
+        div.className = "card";
+        div.innerHTML = `
+          <div class="card-title">
+            <span>${est.Apellidos}, ${est.Nombres}</span>
+            <span class="badge-grade">${est.Grado} ${est.Seccion}</span>
+          </div>
+          ${est.Alerta_Medica ? `<div class="alert-med">⚠️ ALERTA: ${est.Alerta_Medica}</div>` : ''}
+          <div class="contacts">
+            <small style="color:#cbd5e1;"><b>Apoderado:</b> ${est.Contacto_1_Nombre} (${est.Contacto_1_Parentesco})</small>
+            <a href="tel:${est.Contacto_1_Telefono}" class="btn-call">📞 Llamar: ${est.Contacto_1_Telefono}</a>
+          </div>
+        `;
+        contenedor.appendChild(div);
+      });
+    }
+
+    function filtrar() {
+      const grado = document.getElementById("selectGrado").value.toLowerCase();
+      const seccion = document.getElementById("selectSeccion").value.toLowerCase();
+      const texto = document.getElementById("inputBuscar").value.toLowerCase();
+
+      const filtrados = estudiantes.filter(e => {
+        const coincideGrado = !grado || String(e.Grado).toLowerCase().includes(grado);
+        const coincideSeccion = !seccion || String(e.Seccion).toLowerCase().includes(seccion);
+        const coincideTexto = !texto || 
+          String(e.Apellidos).toLowerCase().includes(texto) || 
+          String(e.Nombres).toLowerCase().includes(texto);
+
+        return coincideGrado && coincideSeccion && coincideTexto;
+      });
+
+      mostrarEstudiantes(filtrados);
+    }
+
+    // Registrar Service Worker para soporte offline PWA
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js');
+    }
+
+    window.onload = cargarDatos;
+  </script>
+</body>
+</html>
