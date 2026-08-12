@@ -19,195 +19,255 @@
       --texto-secundario: #52605b;
       --rojo-alerta: #991b1b;
       --rojo-fondo: #fee2e2;
+      --azul-condicion: #1e40af;
+      --azul-fondo: #dbeafe;
     }
 
     * { box-sizing: border-box; font-family: system-ui, -apple-system, sans-serif; }
     body { background-color: var(--crema-fondo); color: var(--texto-principal); margin: 0; padding: 16px; }
     
+    /* PANTALLA DE LOGIN */
+    .login-overlay {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(17, 51, 40, 0.96);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 1000; padding: 20px;
+    }
+    .login-card {
+      background: #ffffff; padding: 24px; border-radius: 12px;
+      width: 100%; max-width: 360px; text-align: center;
+      border: 2px solid var(--dorado); box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    }
+    .login-card h2 { color: var(--verde-principal); margin-top: 0; margin-bottom: 8px; font-size: 1.4rem; }
+    .login-card p { font-size: 0.85rem; color: var(--texto-secundario); margin-bottom: 16px; }
+    .login-card input {
+      width: 100%; padding: 12px; margin-bottom: 12px;
+      border: 1px solid var(--crema-borde); border-radius: 6px;
+      font-size: 1rem; outline: none; text-align: center;
+    }
+    .login-card input:focus { border-color: var(--verde-principal); }
+    .btn-login {
+      width: 100%; background: var(--verde-principal); color: #fff;
+      padding: 12px; border: 1px solid var(--dorado); border-radius: 6px;
+      font-weight: bold; font-size: 1rem; cursor: pointer;
+    }
+    .login-error { color: var(--rojo-alerta); font-size: 0.8rem; margin-top: 10px; display: none; }
+
+    /* ENCABEZADO */
     .header { 
-      text-align: center; 
-      margin-bottom: 16px; 
+      text-align: center; margin-bottom: 16px; 
       background: linear-gradient(135deg, var(--verde-principal), var(--verde-oscuro));
-      color: #ffffff;
-      padding: 16px;
-      border-radius: 12px;
-      border-bottom: 3px solid var(--dorado);
-      box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+      color: #ffffff; padding: 16px; border-radius: 12px;
+      border-bottom: 3px solid var(--dorado); box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+      position: relative;
     }
-
+    .btn-logout {
+      position: absolute; right: 12px; top: 12px;
+      background: transparent; border: 1px solid var(--dorado-brillo);
+      color: #fff; font-size: 0.75rem; padding: 4px 8px; border-radius: 4px; cursor: pointer;
+    }
     .insignia-box {
-      width: 75px;
-      height: 75px;
-      margin: 0 auto 10px auto;
-      border-radius: 50%;
-      background-color: var(--crema-fondo);
-      border: 2px solid var(--dorado);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
+      width: 75px; height: 75px; margin: 0 auto 10px auto; border-radius: 50%;
+      background-color: var(--crema-fondo); border: 2px solid var(--dorado);
+      display: flex; align-items: center; justify-content: center; overflow: hidden;
     }
-
-    .insignia-box img {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-    }
-
-    .insignia-text {
-      font-size: 0.65rem;
-      color: var(--verde-principal);
-      font-weight: bold;
-      text-align: center;
-      padding: 4px;
-    }
-
+    .insignia-box img { width: 100%; height: 100%; object-fit: contain; }
+    .insignia-text { font-size: 0.65rem; color: var(--verde-principal); font-weight: bold; text-align: center; padding: 4px; }
     .header h1 { font-size: 1.3rem; margin: 0; color: #ffffff; font-weight: bold; }
     .status-bar { font-size: 0.8rem; color: var(--dorado-brillo); margin-top: 4px; font-weight: 500; }
     
+    /* FILTROS */
     .filter-box { 
-      background: #ffffff; 
-      padding: 12px; 
-      border-radius: 8px; 
-      margin-bottom: 16px; 
-      display: flex; 
-      flex-direction: column; 
-      gap: 8px; 
-      border: 1px solid var(--crema-borde);
-      box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+      background: #ffffff; padding: 12px; border-radius: 8px; 
+      margin-bottom: 16px; display: flex; flex-direction: column; gap: 8px; 
+      border: 1px solid var(--crema-borde); box-shadow: 0 2px 4px rgba(0,0,0,0.02);
     }
     .row { display: flex; gap: 8px; }
     select, input { 
-      width: 100%; 
-      padding: 10px; 
-      border-radius: 6px; 
-      border: 1px solid var(--crema-borde); 
-      background: var(--crema-fondo); 
-      color: var(--texto-principal); 
-      font-size: 0.9rem; 
-      outline: none;
+      width: 100%; padding: 10px; border-radius: 6px; 
+      border: 1px solid var(--crema-borde); background: var(--crema-fondo); 
+      color: var(--texto-principal); font-size: 0.85rem; outline: none;
     }
+    select:focus, input:focus { border-color: var(--verde-principal); }
 
-    select:focus, input:focus {
-      border-color: var(--verde-principal);
-    }
-    
+    /* TARJETAS DE ALUMNOS */
     .card { 
-      background: var(--crema-tarjeta); 
-      border: 1px solid var(--crema-borde); 
-      border-left: 5px solid var(--verde-principal);
-      border-radius: 8px; 
-      padding: 12px; 
-      margin-bottom: 12px; 
-      box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+      background: var(--crema-tarjeta); border: 1px solid var(--crema-borde); 
+      border-left: 5px solid var(--verde-principal); border-radius: 8px; 
+      padding: 12px; margin-bottom: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.03);
     }
-    .card-title { font-weight: bold; font-size: 1rem; color: var(--verde-principal); display: flex; justify-content: space-between; align-items: center; }
+    .card-title { font-weight: bold; font-size: 1rem; color: var(--verde-principal); display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+    .badges-container { display: flex; gap: 4px; align-items: center; flex-wrap: wrap; }
+    
     .badge-grade { 
-      background: var(--dorado-brillo); 
-      color: var(--verde-oscuro); 
-      font-size: 0.75rem; 
-      padding: 2px 8px; 
-      border-radius: 12px; 
-      border: 1px solid var(--dorado);
-      font-weight: bold;
+      background: var(--dorado-brillo); color: var(--verde-oscuro); 
+      font-size: 0.75rem; padding: 2px 8px; border-radius: 12px; 
+      border: 1px solid var(--dorado); font-weight: bold;
+    }
+    .badge-blood {
+      background: var(--rojo-fondo); color: var(--rojo-alerta); 
+      font-size: 0.75rem; padding: 2px 6px; border-radius: 12px; 
+      border: 1px solid #fca5a5; font-weight: bold;
     }
     
     .alert-med { 
-      background: var(--rojo-fondo); 
-      color: var(--rojo-alerta); 
-      border: 1px solid #fca5a5; 
-      padding: 6px 10px; 
-      border-radius: 6px; 
-      font-size: 0.85rem; 
-      margin: 8px 0; 
-      font-weight: 600;
+      background: var(--rojo-fondo); color: var(--rojo-alerta); 
+      border: 1px solid #fca5a5; padding: 6px 10px; border-radius: 6px; 
+      font-size: 0.85rem; margin: 6px 0; font-weight: 600;
+    }
+    .condicion-med {
+      background: var(--azul-fondo); color: var(--azul-condicion);
+      border: 1px solid #bfdbfe; padding: 6px 10px; border-radius: 6px;
+      font-size: 0.85rem; margin: 6px 0; font-weight: 600;
     }
     
-    .contacts { margin-top: 8px; }
+    /* CONTACTOS Y BOTONES DE LLAMADA */
+    .contacts { margin-top: 8px; display: flex; flex-direction: column; gap: 6px; }
+    .contact-item { background: #f8fafc; padding: 8px; border-radius: 6px; border: 1px solid var(--crema-borde); }
     .btn-call { 
-      display: inline-block; 
-      background: var(--verde-principal); 
-      color: #ffffff; 
-      text-decoration: none; 
-      padding: 10px 12px; 
-      border-radius: 6px; 
-      font-weight: bold; 
-      font-size: 0.85rem; 
-      margin-top: 6px; 
-      width: 100%; 
-      text-align: center; 
-      border: 1px solid var(--dorado);
+      display: inline-block; background: var(--verde-principal); color: #ffffff; 
+      text-decoration: none; padding: 8px 10px; border-radius: 6px; 
+      font-weight: bold; font-size: 0.8rem; margin-top: 4px; width: 100%; 
+      text-align: center; border: 1px solid var(--dorado);
     }
+    .btn-call-sec { background: #334155; border-color: #475569; }
     .btn-call:active { background: var(--verde-oscuro); }
   </style>
 </head>
 <body>
 
+  <!-- MODAL PANTALLA DE LOGIN -->
+  <div id="loginOverlay" class="login-overlay">
+    <div class="login-card">
+      <h2>GakuEmergencias</h2>
+      <p>Ingresa tus credenciales para acceder</p>
+      <input type="number" id="inputDNI" placeholder="Número de DNI">
+      <input type="password" id="inputPIN" placeholder="PIN de Seguridad">
+      <button class="btn-login" onclick="autenticar()">Ingresar</button>
+      <div id="loginError" class="login-error">DNI o PIN incorrecto.</div>
+    </div>
+  </div>
+
+  <!-- APLICACIÓN PRINCIPAL -->
   <div class="header">
-    <!-- ESPACIO PARA LA INSIGNIA DEL COLEGIO -->
+    <button class="btn-logout" onclick="cerrarSesion()">Salir 🔒</button>
     <div class="insignia-box">
       <img src="insignia.png" alt="Insignia" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
       <div class="insignia-text" style="display:none;">INSIGNIA COLEGIO</div>
     </div>
-
     <h1>GakuEmergencias</h1>
-    <div class="status-bar" id="syncStatus">Cargando datos...</div>
+    <div class="status-bar" id="syncStatus">Acceso Restringido</div>
   </div>
 
-  <!-- Filtros combinados: Grado/Sección + Búsqueda por Texto -->
+  <!-- FILTROS REGLAMENTARIOS -->
   <div class="filter-box">
     <div class="row">
       <select id="selectGrado" onchange="filtrar()">
         <option value="">-- Todos los Grados --</option>
-        <option value="1°">1° Grado</option>
-        <option value="2°">2° Grado</option>
-        <option value="3°">3° Grado</option>
-        <option value="4°">4° Grado</option>
-        <option value="5°">5° Grado</option>
-        <option value="6°">6° Grado</option>
+        <optgroup label="Inicial">
+          <option value="3 años">3 Años</option>
+          <option value="4 años">4 Años</option>
+          <option value="5 años">5 Años</option>
+        </optgroup>
+        <optgroup label="Primaria">
+          <option value="1°">1° Primaria</option>
+          <option value="2°">2° Primaria</option>
+          <option value="3°">3° Primaria</option>
+          <option value="4°">4° Primaria</option>
+          <option value="5°">5° Primaria</option>
+          <option value="6°">6° Primaria</option>
+        </optgroup>
+        <optgroup label="Secundaria">
+          <option value="1° Sec">1° Secundaria</option>
+          <option value="2° Sec">2° Secundaria</option>
+          <option value="3° Sec">3° Secundaria</option>
+          <option value="4° Sec">4° Secundaria</option>
+          <option value="5° Sec">5° Secundaria</option>
+        </optgroup>
       </select>
+
       <select id="selectSeccion" onchange="filtrar()">
-        <option value="">-- Sección --</option>
+        <option value="">-- Secc. --</option>
         <option value="A">Sección A</option>
         <option value="B">Sección B</option>
-        <option value="C">Sección C</option>
+        <option value="U">Sección U (Única)</option>
       </select>
     </div>
     <input type="text" id="inputBuscar" placeholder="🔍 Buscar por Nombre o Apellido..." onkeyup="filtrar()">
   </div>
 
-  <!-- Lista dinámica de estudiantes -->
+  <!-- CONTENEDOR DINÁMICO -->
   <div id="listaEstudiantes"></div>
 
   <script>
-    // URL DE TU APPS SCRIPT
     const API_URL = "https://script.google.com/macros/s/AKfycbw2y5DnhCAqJxO8ITkTOlpZiRHdEuaKrMDHcJx4jS37bfUP0zOhp6UO5YR-QX0hL1QP/exec"; 
-    
     let estudiantes = [];
 
-    // Cargar datos (Estrategia Offline-First)
-    async function cargarDatos() {
-      // 1. Cargar copia local guardada previo si existe
-      const localData = localStorage.getItem("directorio_alumnos");
-      if (localData) {
-        estudiantes = JSON.parse(localData);
-        document.getElementById("syncStatus").innerText = "⚡ Datos locales listos (Modo Offline)";
-        mostrarEstudiantes(estudiantes);
+    async function autenticar() {
+      const dni = document.getElementById("inputDNI").value.trim();
+      const pin = document.getElementById("inputPIN").value.trim();
+      const errorDiv = document.getElementById("loginError");
+
+      if (!dni || !pin) {
+        errorDiv.innerText = "Por favor, completa ambos campos.";
+        errorDiv.style.display = "block";
+        return;
       }
 
-      // 2. Intentar actualizar desde la nube si hay internet
+      errorDiv.style.display = "none";
+      document.getElementById("syncStatus").innerText = "Verificando credenciales...";
+
       try {
-        const res = await fetch(API_URL);
-        const data = await res.json();
-        estudiantes = data;
-        localStorage.setItem("directorio_alumnos", JSON.stringify(data));
-        document.getElementById("syncStatus").innerText = "✅ Sincronizado con Google Sheets";
-        mostrarEstudiantes(estudiantes);
+        const res = await fetch(`${API_URL}?dni=${encodeURIComponent(dni)}&pin=${encodeURIComponent(pin)}`);
+        const json = await res.json();
+
+        if (json.success) {
+          estudiantes = json.data;
+          // Guardar credenciales localmente para persistencia de sesión
+          localStorage.setItem("gaku_user_dni", dni);
+          localStorage.setItem("gaku_user_pin", pin);
+          localStorage.setItem("directorio_alumnos", JSON.stringify(estudiantes));
+
+          document.getElementById("loginOverlay").style.display = "none";
+          document.getElementById("syncStatus").innerText = "✅ Sincronizado con Google Sheets";
+          mostrarEstudiantes(estudiantes);
+        } else {
+          errorDiv.innerText = json.message || "DNI o PIN incorrecto.";
+          errorDiv.style.display = "block";
+          document.getElementById("syncStatus").innerText = "Acceso denegado";
+        }
       } catch (err) {
-        if (!localData) {
-          document.getElementById("syncStatus").innerText = "⚠️ Sin conexión y sin datos locales";
+        // En caso de estar sin conexión, probar autenticación con datos locales
+        const localDni = localStorage.getItem("gaku_user_dni");
+        const localPin = localStorage.getItem("gaku_user_pin");
+        const localData = localStorage.getItem("directorio_alumnos");
+
+        if (localDni === dni && localPin === pin && localData) {
+          estudiantes = JSON.parse(localData);
+          document.getElementById("loginOverlay").style.display = "none";
+          document.getElementById("syncStatus").innerText = "⚡ Modo Offline (Datos Locales)";
+          mostrarEstudiantes(estudiantes);
+        } else {
+          errorDiv.innerText = "Sin conexión a internet o sin datos locales.";
+          errorDiv.style.display = "block";
         }
       }
+    }
+
+    function autoLogin() {
+      const savedDni = localStorage.getItem("gaku_user_dni");
+      const savedPin = localStorage.getItem("gaku_user_pin");
+
+      if (savedDni && savedPin) {
+        document.getElementById("inputDNI").value = savedDni;
+        document.getElementById("inputPIN").value = savedPin;
+        autenticar();
+      }
+    }
+
+    function cerrarSesion() {
+      localStorage.clear();
+      location.reload();
     }
 
     function mostrarEstudiantes(lista) {
@@ -222,15 +282,48 @@
       lista.forEach(est => {
         const div = document.createElement("div");
         div.className = "card";
+
+        // Mapeo flexible de celdas
+        const tipoSangre = est.Tipo_Sangre || est.Tipo_de_Sangre || '';
+        const badgeSangre = tipoSangre ? `<span class="badge-blood">🩸 ${tipoSangre}</span>` : '';
+        const condicionMed = est.Condicion_Medica || est.Condicion_Medica_a_considerar || '';
+
+        // Contacto 1
+        const c1Nombre = est.Contacto_1_Nombre || 'Contacto Principal';
+        const c1Parentesco = est.Contacto_1_Parentesco ? `(${est.Contacto_1_Parentesco})` : '';
+        const c1Telefono = est.Contacto_1_Telefono || '';
+
+        // Contacto 2
+        const c2Nombre = est.Contacto_2_Nombre || '';
+        const c2Parentesco = est.Contacto_2_Parentesco ? `(${est.Contacto_2_Parentesco})` : '';
+        const c2Telefono = est.Contacto_2_Telefono || '';
+
+        let htmlContacto2 = '';
+        if (c2Nombre || c2Telefono) {
+          htmlContacto2 = `
+            <div class="contact-item">
+              <small style="color: var(--texto-secundario);"><b>Contacto 2:</b> ${c2Nombre} ${c2Parentesco}</small>
+              ${c2Telefono ? `<a href="tel:${c2Telefono}" class="btn-call btn-call-sec">📞 Llamar: ${c2Telefono}</a>` : '<small style="display:block; color:#94a3b8;">Sin número</small>'}
+            </div>
+          `;
+        }
+
         div.innerHTML = `
           <div class="card-title">
             <span>${est.Apellidos}, ${est.Nombres}</span>
-            <span class="badge-grade">${est.Grado} ${est.Seccion}</span>
+            <div class="badges-container">
+              ${badgeSangre}
+              <span class="badge-grade">${est.Grado} "${est.Seccion}"</span>
+            </div>
           </div>
-          ${est.Alerta_Medica ? `<div class="alert-med">⚠️ ALERTA: ${est.Alerta_Medica}</div>` : ''}
+          ${est.Alerta_Medica ? `<div class="alert-med">⚠️ ALERTA MÉDICA: ${est.Alerta_Medica}</div>` : ''}
+          ${condicionMed ? `<div class="condicion-med">🏥 CONDICIÓN: ${condicionMed}</div>` : ''}
           <div class="contacts">
-            <small style="color: var(--texto-secundario);"><b>Apoderado:</b> ${est.Contacto_1_Nombre} (${est.Contacto_1_Parentesco})</small>
-            <a href="tel:${est.Contacto_1_Telefono}" class="btn-call">📞 Llamar: ${est.Contacto_1_Telefono}</a>
+            <div class="contact-item">
+              <small style="color: var(--texto-secundario);"><b>Contacto 1:</b> ${c1Nombre} ${c1Parentesco}</small>
+              ${c1Telefono ? `<a href="tel:${c1Telefono}" class="btn-call">📞 Llamar: ${c1Telefono}</a>` : '<small style="display:block; color:#94a3b8;">Sin número</small>'}
+            </div>
+            ${htmlContacto2}
           </div>
         `;
         contenedor.appendChild(div);
@@ -244,7 +337,7 @@
 
       const filtrados = estudiantes.filter(e => {
         const coincideGrado = !grado || String(e.Grado).toLowerCase().includes(grado);
-        const coincideSeccion = !seccion || String(e.Seccion).toLowerCase().includes(seccion);
+        const coincideSeccion = !seccion || String(e.Seccion).toLowerCase().trim() === seccion;
         const coincideTexto = !texto || 
           String(e.Apellidos).toLowerCase().includes(texto) || 
           String(e.Nombres).toLowerCase().includes(texto);
@@ -255,12 +348,11 @@
       mostrarEstudiantes(filtrados);
     }
 
-    // Registrar Service Worker para soporte offline PWA
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('sw.js');
     }
 
-    window.onload = cargarDatos;
+    window.onload = autoLogin;
   </script>
 </body>
 </html>
