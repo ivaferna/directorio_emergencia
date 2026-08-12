@@ -76,7 +76,7 @@
     .header h1 { font-size: 1.3rem; margin: 0; color: #ffffff; font-weight: bold; }
     .status-bar { font-size: 0.8rem; color: var(--dorado-brillo); margin-top: 4px; font-weight: 500; }
     
-    /* FILTROS */
+    /* FILTROS DINÁMICOS EN CASCADA */
     .filter-box { 
       background: #ffffff; padding: 12px; border-radius: 8px; 
       margin-bottom: 16px; display: flex; flex-direction: column; gap: 8px; 
@@ -159,38 +159,25 @@
     <div class="status-bar" id="syncStatus">Acceso Restringido</div>
   </div>
 
-  <!-- FILTROS REGLAMENTARIOS -->
+  <!-- FILTROS DINÁMICOS EN CASCADA -->
   <div class="filter-box">
     <div class="row">
-      <select id="selectGrado" onchange="filtrar()">
-        <option value="">-- Todos los Grados --</option>
-        <optgroup label="Inicial">
-          <option value="3 años">3 Años</option>
-          <option value="4 años">4 Años</option>
-          <option value="5 años">5 Años</option>
-        </optgroup>
-        <optgroup label="Primaria">
-          <option value="1°">1° Primaria</option>
-          <option value="2°">2° Primaria</option>
-          <option value="3°">3° Primaria</option>
-          <option value="4°">4° Primaria</option>
-          <option value="5°">5° Primaria</option>
-          <option value="6°">6° Primaria</option>
-        </optgroup>
-        <optgroup label="Secundaria">
-          <option value="1° Sec">1° Secundaria</option>
-          <option value="2° Sec">2° Secundaria</option>
-          <option value="3° Sec">3° Secundaria</option>
-          <option value="4° Sec">4° Secundaria</option>
-          <option value="5° Sec">5° Secundaria</option>
-        </optgroup>
+      <!-- 1. NIVEL -->
+      <select id="selectNivel" onchange="actualizarGrados(); filtrar();">
+        <option value="">-- Nivel (Todos) --</option>
+        <option value="Inicial">Inicial</option>
+        <option value="Primaria">Primaria</option>
+        <option value="Secundaria">Secundaria</option>
       </select>
 
-      <select id="selectSeccion" onchange="filtrar()">
-        <option value="">-- Secc. --</option>
-        <option value="A">Sección A</option>
-        <option value="B">Sección B</option>
-        <option value="U">Sección U (Única)</option>
+      <!-- 2. GRADO (Se llena dinámicamente según el Nivel) -->
+      <select id="selectGrado" onchange="actualizarSecciones(); filtrar();" disabled>
+        <option value="">-- Grado (Todos) --</option>
+      </select>
+
+      <!-- 3. SECCIÓN (Se ajusta según Nivel/Grado) -->
+      <select id="selectSeccion" onchange="filtrar();" disabled>
+        <option value="">-- Sección (Todas) --</option>
       </select>
     </div>
     <input type="text" id="inputBuscar" placeholder="🔍 Buscar por Nombre o Apellido..." onkeyup="filtrar()">
@@ -270,6 +257,71 @@
       location.reload();
     }
 
+    // 1. ACTUALIZA LA LISTA DE GRADOS SEGÚN EL NIVEL SELECCIONADO
+    function actualizarGrados() {
+      const nivel = document.getElementById("selectNivel").value;
+      const comboGrado = document.getElementById("selectGrado");
+      const comboSeccion = document.getElementById("selectSeccion");
+
+      comboGrado.innerHTML = '<option value="">-- Grado (Todos) --</option>';
+      comboSeccion.innerHTML = '<option value="">-- Sección (Todas) --</option>';
+      comboSeccion.disabled = true;
+
+      if (!nivel) {
+        comboGrado.disabled = true;
+        return;
+      }
+
+      comboGrado.disabled = false;
+
+      let opcionesGrado = [];
+      if (nivel === "Inicial") {
+        opcionesGrado = ["3°", "4°", "5°"];
+      } else if (nivel === "Primaria") {
+        opcionesGrado = ["1°", "2°", "3°", "4°", "5°", "6°"];
+      } else if (nivel === "Secundaria") {
+        opcionesGrado = ["1°", "2°", "3°", "4°", "5°"];
+      }
+
+      opcionesGrado.forEach(g => {
+        const opt = document.createElement("option");
+        opt.value = g;
+        opt.textContent = (nivel === "Inicial") ? `${g} Años` : `${g} Grado/Año`;
+        comboGrado.appendChild(opt);
+      });
+
+      actualizarSecciones();
+    }
+
+    // 2. ACTUALIZA LAS SECCIONES SEGÚN EL NIVEL
+    function actualizarSecciones() {
+      const nivel = document.getElementById("selectNivel").value;
+      const comboSeccion = document.getElementById("selectSeccion");
+
+      comboSeccion.innerHTML = '<option value="">-- Sección (Todas) --</option>';
+
+      if (!nivel) {
+        comboSeccion.disabled = true;
+        return;
+      }
+
+      comboSeccion.disabled = false;
+
+      if (nivel === "Inicial") {
+        const opt = document.createElement("option");
+        opt.value = "U";
+        opt.textContent = "Única";
+        comboSeccion.appendChild(opt);
+      } else {
+        ["A", "B", "U"].forEach(sec => {
+          const opt = document.createElement("option");
+          opt.value = sec;
+          opt.textContent = sec === "U" ? "Sección U (Única)" : `Sección ${sec}`;
+          comboSeccion.appendChild(opt);
+        });
+      }
+    }
+
     function mostrarEstudiantes(lista) {
       const contenedor = document.getElementById("listaEstudiantes");
       contenedor.innerHTML = "";
@@ -287,6 +339,16 @@
         const tipoSangre = est.Tipo_Sangre || est.Tipo_de_Sangre || '';
         const badgeSangre = tipoSangre ? `<span class="badge-blood">🩸 ${tipoSangre}</span>` : '';
         const condicionMed = est.Condicion_Medica || est.Condicion_Medica_a_considerar || '';
+
+        // Formato limpio de Insignia de Grado/Nivel
+        const nivelStr = String(est.Nivel || '').trim();
+        const gradoStr = String(est.Grado || '').trim();
+        const seccionStr = String(est.Seccion || '').trim();
+        
+        let etiquetaGrado = `${gradoStr} "${seccionStr}"`;
+        if (nivelStr.toLowerCase() === "inicial") {
+          etiquetaGrado = `${nivelStr} ${gradoStr}`;
+        }
 
         // Contacto 1
         const c1Nombre = est.Contacto_1_Nombre || 'Contacto Principal';
@@ -313,7 +375,7 @@
             <span>${est.Apellidos}, ${est.Nombres}</span>
             <div class="badges-container">
               ${badgeSangre}
-              <span class="badge-grade">${est.Grado} "${est.Seccion}"</span>
+              <span class="badge-grade">${etiquetaGrado}</span>
             </div>
           </div>
           ${est.Alerta_Medica ? `<div class="alert-med">⚠️ ALERTA MÉDICA: ${est.Alerta_Medica}</div>` : ''}
@@ -330,19 +392,43 @@
       });
     }
 
+    // 3. NUEVA FUNCIÓN DE FILTRADO (Compara directamente Nivel, Grado y Seccion)
     function filtrar() {
-      const grado = document.getElementById("selectGrado").value.toLowerCase();
-      const seccion = document.getElementById("selectSeccion").value.toLowerCase();
-      const texto = document.getElementById("inputBuscar").value.toLowerCase();
+      const nivelSel = document.getElementById("selectNivel").value.toLowerCase();
+      const gradoSel = document.getElementById("selectGrado").value.toLowerCase();
+      const seccionSel = document.getElementById("selectSeccion").value.toLowerCase();
+      const textoSel = document.getElementById("inputBuscar").value.toLowerCase().trim();
 
       const filtrados = estudiantes.filter(e => {
-        const coincideGrado = !grado || String(e.Grado).toLowerCase().includes(grado);
-        const coincideSeccion = !seccion || String(e.Seccion).toLowerCase().trim() === seccion;
-        const coincideTexto = !texto || 
-          String(e.Apellidos).toLowerCase().includes(texto) || 
-          String(e.Nombres).toLowerCase().includes(texto);
+        // Lectura de columnas
+        const nivelAlumno = String(e.Nivel || "").toLowerCase().trim();
+        const gradoAlumno = String(e.Grado || "").toLowerCase().trim();
+        const seccionAlumno = String(e.Seccion || "").toLowerCase().trim();
 
-        return coincideGrado && coincideSeccion && coincideTexto;
+        // Validar Nivel
+        const coincideNivel = !nivelSel || nivelAlumno === nivelSel;
+
+        // Validar Grado (Limpia "°", "año" y "años" para evitar fallos de coincidencia)
+        const gAlumnoLimpio = gradoAlumno.replace("°", "").replace("año", "").replace("años", "").trim();
+        const gSelLimpio = gradoSel.replace("°", "").trim();
+        const coincideGrado = !gradoSel || gAlumnoLimpio === gSelLimpio;
+
+        // Validar Sección
+        let coincideSeccion = false;
+        if (!seccionSel) {
+          coincideSeccion = true;
+        } else if (nivelSel === "inicial") {
+          coincideSeccion = true; 
+        } else {
+          coincideSeccion = seccionAlumno === seccionSel;
+        }
+
+        // Búsqueda por Nombres o Apellidos
+        const coincideTexto = !textoSel || 
+          String(e.Apellidos || "").toLowerCase().includes(textoSel) || 
+          String(e.Nombres || "").toLowerCase().includes(textoSel);
+
+        return coincideNivel && coincideGrado && coincideSeccion && coincideTexto;
       });
 
       mostrarEstudiantes(filtrados);
