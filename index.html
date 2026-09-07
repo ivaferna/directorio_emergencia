@@ -51,7 +51,7 @@
       padding: 12px; border: 1px solid var(--dorado); border-radius: 6px;
       font-weight: bold; font-size: 1rem; cursor: pointer;
     }
-    .login-error { color: var(--rojo-alerta); font-size: 0.8rem; margin-top: 10px; display: none; }
+    .login-error { color: var(--rojo-alerta); font-size: 0.8rem; margin-top: 10px; display: none; font-weight: bold; }
 
     /* ENCABEZADO */
     .header { 
@@ -76,7 +76,7 @@
     .header h1 { font-size: 1.3rem; margin: 0; color: #ffffff; font-weight: bold; }
     .status-bar { font-size: 0.8rem; color: var(--dorado-brillo); margin-top: 4px; font-weight: 500; }
     
-    /* FILTROS DINÁMICOS EN CASCADA */
+    /* FILTROS DINÁMICOS */
     .filter-box { 
       background: #ffffff; padding: 12px; border-radius: 8px; 
       margin-bottom: 16px; display: flex; flex-direction: column; gap: 8px; 
@@ -121,7 +121,7 @@
       font-size: 0.85rem; margin: 6px 0; font-weight: 600;
     }
     
-    /* CONTACTOS Y BOTONES DE LLAMADA */
+    /* CONTACTOS Y BOTONES */
     .contacts { margin-top: 8px; display: flex; flex-direction: column; gap: 6px; }
     .contact-item { background: #f8fafc; padding: 8px; border-radius: 6px; border: 1px solid var(--crema-borde); }
     .btn-call { 
@@ -139,6 +139,10 @@
   <!-- MODAL PANTALLA DE LOGIN -->
   <div id="loginOverlay" class="login-overlay">
     <div class="login-card">
+      <div class="insignia-box">
+        <img src="insignia.png" alt="Insignia" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+        <div class="insignia-text" style="display:none;">INSIGNIA</div>
+      </div>
       <h2>GakuEmergencias</h2>
       <p>Ingresa tus credenciales para acceder</p>
       <input type="number" id="inputDNI" placeholder="Número de DNI">
@@ -162,7 +166,6 @@
   <!-- FILTROS DINÁMICOS EN CASCADA -->
   <div class="filter-box">
     <div class="row">
-      <!-- 1. NIVEL -->
       <select id="selectNivel" onchange="actualizarGrados(); filtrar();">
         <option value="">-- Nivel (Todos) --</option>
         <option value="Inicial">Inicial</option>
@@ -170,12 +173,10 @@
         <option value="Secundaria">Secundaria</option>
       </select>
 
-      <!-- 2. GRADO (Se llena dinámicamente según el Nivel) -->
       <select id="selectGrado" onchange="actualizarSecciones(); filtrar();" disabled>
         <option value="">-- Grado (Todos) --</option>
       </select>
 
-      <!-- 3. SECCIÓN (Se ajusta según Nivel/Grado) -->
       <select id="selectSeccion" onchange="filtrar();" disabled>
         <option value="">-- Sección (Todas) --</option>
       </select>
@@ -190,6 +191,7 @@
     const API_URL = "https://script.google.com/macros/s/AKfycbw2y5DnhCAqJxO8ITkTOlpZiRHdEuaKrMDHcJx4jS37bfUP0zOhp6UO5YR-QX0hL1QP/exec"; 
     let estudiantes = [];
 
+    // 1. AUTENTICACIÓN CON CONTROL DE ESTADO E INVALIDEZ DE CACHÉ
     async function autenticar() {
       const dni = document.getElementById("inputDNI").value.trim();
       const pin = document.getElementById("inputPIN").value.trim();
@@ -205,26 +207,29 @@
       document.getElementById("syncStatus").innerText = "Verificando credenciales...";
 
       try {
-        const res = await fetch(`${API_URL}?dni=${encodeURIComponent(dni)}&pin=${encodeURIComponent(pin)}`);
+        const res = await fetch(`${API_URL}?action=login&dni=${encodeURIComponent(dni)}&pin=${encodeURIComponent(pin)}`);
         const json = await res.json();
 
         if (json.success) {
           estudiantes = json.data;
-          // Guardar credenciales localmente para persistencia de sesión
+          // Guardar credenciales y datos localmente
           localStorage.setItem("gaku_user_dni", dni);
           localStorage.setItem("gaku_user_pin", pin);
           localStorage.setItem("directorio_alumnos", JSON.stringify(estudiantes));
 
           document.getElementById("loginOverlay").style.display = "none";
           document.getElementById("syncStatus").innerText = "✅ Sincronizado con Google Sheets";
-          mostrarEstudiantes(estudiantes);
+          filtrar();
         } else {
-          errorDiv.innerText = json.message || "DNI o PIN incorrecto.";
+          // SI EL USUARIO PASA A INACTIVO: SE BORRAN LOS DATOS DE LA MEMORIA
+          localStorage.clear();
+          errorDiv.innerText = json.message || "Usuario inactivo o credenciales incorrectas.";
           errorDiv.style.display = "block";
-          document.getElementById("syncStatus").innerText = "Acceso denegado";
+          document.getElementById("syncStatus").innerText = "Acceso revocado";
+          document.getElementById("loginOverlay").style.display = "flex";
         }
       } catch (err) {
-        // En caso de estar sin conexión, probar autenticación con datos locales
+        // Validación local (Modo Offline)
         const localDni = localStorage.getItem("gaku_user_dni");
         const localPin = localStorage.getItem("gaku_user_pin");
         const localData = localStorage.getItem("directorio_alumnos");
@@ -233,7 +238,7 @@
           estudiantes = JSON.parse(localData);
           document.getElementById("loginOverlay").style.display = "none";
           document.getElementById("syncStatus").innerText = "⚡ Modo Offline (Datos Locales)";
-          mostrarEstudiantes(estudiantes);
+          filtrar();
         } else {
           errorDiv.innerText = "Sin conexión a internet o sin datos locales.";
           errorDiv.style.display = "block";
@@ -257,7 +262,6 @@
       location.reload();
     }
 
-    // 1. ACTUALIZA LA LISTA DE GRADOS SEGÚN EL NIVEL SELECCIONADO
     function actualizarGrados() {
       const nivel = document.getElementById("selectNivel").value;
       const comboGrado = document.getElementById("selectGrado");
@@ -293,7 +297,6 @@
       actualizarSecciones();
     }
 
-    // 2. ACTUALIZA LAS SECCIONES SEGÚN EL NIVEL
     function actualizarSecciones() {
       const nivel = document.getElementById("selectNivel").value;
       const comboSeccion = document.getElementById("selectSeccion");
@@ -335,12 +338,10 @@
         const div = document.createElement("div");
         div.className = "card";
 
-        // Mapeo flexible de celdas
         const tipoSangre = est.Tipo_Sangre || est.Tipo_de_Sangre || '';
         const badgeSangre = tipoSangre ? `<span class="badge-blood">🩸 ${tipoSangre}</span>` : '';
         const condicionMed = est.Condicion_Medica || est.Condicion_Medica_a_considerar || '';
 
-        // Formato limpio de Insignia de Grado/Nivel
         const nivelStr = String(est.Nivel || '').trim();
         const gradoStr = String(est.Grado || '').trim();
         const seccionStr = String(est.Seccion || '').trim();
@@ -350,12 +351,10 @@
           etiquetaGrado = `${nivelStr} ${gradoStr}`;
         }
 
-        // Contacto 1
         const c1Nombre = est.Contacto_1_Nombre || 'Contacto Principal';
         const c1Parentesco = est.Contacto_1_Parentesco ? `(${est.Contacto_1_Parentesco})` : '';
         const c1Telefono = est.Contacto_1_Telefono || '';
 
-        // Contacto 2
         const c2Nombre = est.Contacto_2_Nombre || '';
         const c2Parentesco = est.Contacto_2_Parentesco ? `(${est.Contacto_2_Parentesco})` : '';
         const c2Telefono = est.Contacto_2_Telefono || '';
@@ -392,7 +391,7 @@
       });
     }
 
-    // 3. NUEVA FUNCIÓN DE FILTRADO (Compara directamente Nivel, Grado y Seccion)
+    // 2. FUNCIÓN DE FILTRADO CON VALIDACIÓN DE ESTADO ACTIVO/INACTIVO DE ESTUDIANTES
     function filtrar() {
       const nivelSel = document.getElementById("selectNivel").value.toLowerCase();
       const gradoSel = document.getElementById("selectGrado").value.toLowerCase();
@@ -400,20 +399,22 @@
       const textoSel = document.getElementById("inputBuscar").value.toLowerCase().trim();
 
       const filtrados = estudiantes.filter(e => {
-        // Lectura de columnas
+        // Validar Estado del Estudiante (Si no es 'activo', se excluye)
+        const estadoAlumno = String(e.Estado || e.Estado_Actual || e.Estado_actual || '').trim().toLowerCase();
+        if (estadoAlumno && estadoAlumno !== 'activo') {
+          return false;
+        }
+
         const nivelAlumno = String(e.Nivel || "").toLowerCase().trim();
         const gradoAlumno = String(e.Grado || "").toLowerCase().trim();
         const seccionAlumno = String(e.Seccion || "").toLowerCase().trim();
 
-        // Validar Nivel
         const coincideNivel = !nivelSel || nivelAlumno === nivelSel;
 
-        // Validar Grado (Limpia "°", "año" y "años" para evitar fallos de coincidencia)
         const gAlumnoLimpio = gradoAlumno.replace("°", "").replace("año", "").replace("años", "").trim();
         const gSelLimpio = gradoSel.replace("°", "").trim();
         const coincideGrado = !gradoSel || gAlumnoLimpio === gSelLimpio;
 
-        // Validar Sección
         let coincideSeccion = false;
         if (!seccionSel) {
           coincideSeccion = true;
@@ -423,7 +424,6 @@
           coincideSeccion = seccionAlumno === seccionSel;
         }
 
-        // Búsqueda por Nombres o Apellidos
         const coincideTexto = !textoSel || 
           String(e.Apellidos || "").toLowerCase().includes(textoSel) || 
           String(e.Nombres || "").toLowerCase().includes(textoSel);
