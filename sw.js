@@ -1,8 +1,9 @@
-const CACHE_NAME = 'emergencia-v2';
+const CACHE_NAME = 'emergencia-v3';
 const ASSETS = [
   './',
   './index.html',
   './manifest.json'
+  './icono.png'
 ];
 
 self.addEventListener('install', (e) => {
